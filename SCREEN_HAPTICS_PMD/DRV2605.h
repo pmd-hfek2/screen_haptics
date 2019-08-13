@@ -43,8 +43,9 @@ public:
 							uint8_t ratedVoltage, uint8_t overdriveClamp,  
 							uint8_t compensation, uint8_t backEMF, uint8_t feedback );
 
-	void Audio	( uint8_t LRA_AUDIO, uint8_t ratedVoltage, uint8_t overdriveClamp,  
-							uint8_t compensation, uint8_t backEMF );
+	void Audio	( uint8_t LRA_AUDIO, uint8_t effect, 
+							uint8_t ratedVoltage, uint8_t overdriveClamp,  
+							uint8_t compensation, uint8_t backEMF, uint8_t feedback );
 
         void setDefaults	();
 

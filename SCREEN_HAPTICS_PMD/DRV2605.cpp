@@ -71,15 +71,15 @@ bool DRV2605::autoCal( uint8_t ratedVoltage, uint8_t overdriveClamp, boolean LRA
 	// Read status bit
 	I2C_Read( ADDR_STATUS, &fb );
 
-	if( fb & STAT_DIAG_BAD )
-	{
-		//Results did not converge
-		Serial.print(F( "Fail: " ));
-		Serial.print( control1 );
-		Serial.print(F( " tries. Status " ));
-		Serial.println( fb, BIN );
-		return false;
-	}
+//	if( fb & STAT_DIAG_BAD )
+//	{
+//		//Results did not converge
+//		Serial.print(F( "Fail: " ));
+//		Serial.print( control1 );
+//		Serial.print(F( " tries. Status " ));
+//		Serial.println( fb, BIN );
+//		return false;
+//	}
 
 	Serial.print(F( "Status " ));
 	Serial.println( fb, BIN );
@@ -160,26 +160,41 @@ void DRV2605::playFullHaptic( uint8_t library, uint8_t effect, uint8_t ratedVolt
 
 
 
-void DRV2605::Audio( uint8_t LRA_AUDIO,  uint8_t ratedVoltage, uint8_t overdriveClamp, uint8_t compensation, uint8_t backEMF )
+void DRV2605::Audio( uint8_t LRA_AUDIO, uint8_t effect, uint8_t ratedVoltage, uint8_t overdriveClamp, uint8_t compensation, uint8_t backEMF, uint8_t feedback )
 {
-  I2C_Write(ADDR_MODE, MODE_A2H );  // A2H mode  
-  I2C_Write( ADDR_CTRL1,     0xB3 );  // Set the AC Couple bit in COntrol 1
-  I2C_Write( ADDR_CTRL3,     0x62 );  // Set the Analog bit in Control 3
 
-  
-  I2C_Write( ADDR_A2H_MIN_IN, DEFAULT_A2H_MIN_IN );  // addr 0x12 AUDIO MIN INPUT LEVEL 1.8V * 32 / 255 ~225mV
-  I2C_Write( ADDR_A2H_MAX_IN, DEFAULT_A2H_MAX_IN );  //addr 0x13 AUDIO MAX INPUT LEVEL 1.8V * 128 / 255 ~900mV 
-  I2C_Write( ADDR_A2H_MIN_OUT, DEFAULT_A2H_MIN_OUT );  //addr 0x14 AUDIO MIN OUTPUT DRIVE  reg /255 * 100%
-  I2C_Write( ADDR_A2H_MAX_OUT, DEFAULT_A2H_MAX_OUT );  //addr 0x15 AUDIO MAX OUTPUT DRIVE reg /255 * 100%
-  I2C_Write( ADDR_RATED_VOLT, ratedVoltage );  
-  I2C_Write( ADDR_OD_CLAMP, overdriveClamp );  
-  I2C_Write( ADDR_AC_COMP, compensation ); 
-  I2C_Write( ADDR_AC_BACK_EMF, backEMF ); 
-  
-  if(LRA_AUDIO) 
-    I2C_Write( ADDR_FEEDBACK,     FB_MODE_LRA ); 
-  else   
-    I2C_Write( ADDR_FEEDBACK,     FB_MODE_ERM ); 
+	noInterrupts();                   
+ 
+  i2cSendStart();
+	i2cSendByte( DRV2605_ADDR_WR);	        // write 0xB4
+	i2cSendByte( GO);                       //out of standby write 0x01 to 0x00 reg	              
+  i2cSendByte( AUDIO_MODE );              //audio mode value 0x04
+  i2cSendByte( MODE_INT_TRIG);            //reg adress 0x02 No Real time playback out of standby write 0x01 to 0x00 reg               
+  i2cSendStop();
+
+  i2cSendStart();
+  i2cSendByte( DRV2605_ADDR_WR);          // write 0xB4
+  i2cSendByte( 0x12 );                    // write first register address
+  i2cSendByte( DEFAULT_A2H_MIN_IN );      // addr 0x12 AUDIO MIN INPUT LEVEL 1.8V * 32 / 255 ~225mV
+  i2cSendByte( DEFAULT_A2H_MAX_IN);                    //addr 0x13 AUDIO MAX INPUT LEVEL 1.8V * 128 / 255 ~900mV 
+  i2cSendByte( DEFAULT_A2H_MIN_OUT );                    //addr 0x14 AUDIO MIN OUTPUT DRIVE  reg /255 * 100%
+  i2cSendByte( DEFAULT_A2H_MAX_OUT );                   //addr 0x15 AUDIO MAX OUTPUT DRIVE reg /255 * 100%
+	i2cSendByte( ratedVoltage );            //addr 0x16
+	i2cSendByte( overdriveClamp );          //addr 0x17
+	i2cSendByte( compensation );            //addr 0x18
+	i2cSendByte( backEMF );                 //addr 0x19
+ 	
+ 	if(LRA_AUDIO) 
+ 	  i2cSendByte( FB_MODE_LRA );           //addr 0x1A
+ 	else   
+    i2cSendByte( FB_MODE_ERM );             //addr 0x1A
+
+	i2cSendByte( AUDIO_CTRL1);                //addr 0x1B
+	i2cSendByte( AUDIO_CTRL2 );                //addr 0x1C
+	i2cSendByte( AUDIO_CTRL3 );                //addr 0x1D
+	i2cSendStop();                          
+
+	interrupts();
 }
 
 

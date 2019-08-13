@@ -19,42 +19,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-#ifndef include_defs_h
-#define include_defs_h
-// OLED
-#define OLED_DC			8
-#define OLED_CS			5
-#define OLED_CLK		13
-#define OLED_MOSI		11
-#define OLED_RESET		10
+#ifndef include_debug_h
+#define include_debug_h
 
-// Pin values
-#define SRC_SEL         4   // D4 switch beetwen DRV and MOS as and signal source
-#define GRIP_SEL        3   // D3 switch outputs GRIP/SHIELD
-#define LRA_SEL         6   // D6 switch signal to LRA on haptic shield
-#define ERM_SEL         A3
+#define _DEBUG
 
-//#define SW_LRA_M      7
-//#define SW_MOS_DRV    6
+int freeRAM();
 
-#define FAH_4830_EN		A2
-#define DRV_2605_EN		7
-#define PWM_OUT			9
-
-// Motors
-#define NUM_MOTORS      7     // added TacHammer solenoid
-#define MOTOR_PIN_0     A0    // pins for motor changing on grip  GRSEL1
-#define MOTOR_PIN_1     A1    // pins for motor changing on grip  GRSEL2
-#define KEY_MOTOR_ID    4
-
-// DRV2605
-#define DRV2605_ADDR_WR 0xB4
-#define DRV2605_ADDR_RD 0xB5
-
-// EEPROM saved settings
-#define MOTOR_VALS_ADDR	0x00	// Address of the calibration bitmask
-#define MOTOR_AC_ADDR	0x01	// Address to start saving autocal vals
-#define MOTOR_AC_SIZE	0x03	// 3 bytes per autocal
-#define MOTOR_AC_LEN	0x0C	// MOTOR_AC_SIZE * NUM_MOTORS
-
-#endif // include_defs_h
+#endif // include_debug_h
