@@ -26,11 +26,21 @@ Metro timer( 2000, 1 );
 Motor motor = Motor();
 
 //*************************** WIRING  **************************************//
-/*
- * PMD Haptic Feedback Evaluation Kit (HFEK) in Developer Mode
+/* PMD Haptic Feedback Evaluation Kit (HFEK) in Developer Mode
+ * 
+ * Button1 --> ARD D5
+ * Button2 --> ARD D8
+ * Button3 --> ARD D10
  */
 
 //*************************** VARIABLES **************************************//
+
+const int pinButton1 = 5;   //D5
+int Button1 = 0;
+const int pinButton2 = 8;   //D8
+int Button2 = 0;
+const int pinButton3 = 10;  //D10
+int Button3 = 0;
 
 typedef struct{
   int value;
@@ -43,17 +53,23 @@ effect EFFECT[10] = {{5,"single-click sharp"},{25,"single-tick sharp"},
                      {87,"ramp-up short"},{85,"ramp-up medium"},{83,"ramp-up long"},
                      {75,"ramp-down short"},{73,"ramp-down medium"},{71,"ramp-down long"}};
 
-
+int index = 0;
 
 //*************************** SETUP **************************************//
 void setup()
 {
-  // Setup serial
+  // setup Serial
   Serial.begin( 9600 );
   Serial.println(F("PRECISION MICRODRIVES - SCREEN_HAPTICS_PMD DEMO"));
   //Serial.print( F("FreeMem=") );
   //Serial.println( freeRAM() );
-  
+
+  //init Buttons
+  pinMode(pinButton1, INPUT);
+  pinMode(pinButton2, INPUT);
+  pinMode(pinButton3, INPUT);
+
+  //init DRV
   setupPins();
   i2cInit( 200 );
   
@@ -69,6 +85,7 @@ void setup()
 //*************************** LOOP **************************************//
 void loop()
 {
+  //============= ORIGINAL CODE ====================
 //  // Example code - check for some condition
 //  // N.B. We play an effect every 2 seconds
 //  uint8_t condition = timer.check();
@@ -78,9 +95,40 @@ void loop()
 //   condition = 0;
 //   motor.playFullHaptic( 1, 53 );
 //  }
- 
+
+  //============= DEMO CODE =======================
   //Demo effects
-  demo();
+  //demo();
+
+  //============= APPLICATION CODE ================
+  //read buttons
+  Button1 = digitalRead(pinButton1);
+  Button2 = digitalRead(pinButton2);
+  Button3 = digitalRead(pinButton3);
+
+  //Button1 is used to play effect
+  if(Button1)
+  {
+    Serial.println(index);
+    PrintEffect(EFFECT[index]);
+    PlayEffect(EFFECT[index].value);
+  }
+
+  //Button2 is used to increment effect
+  if(Button2)
+  {
+   index++;
+   if(index>9)
+    index=9; 
+  }
+
+  //Button3 is used to decrement effect
+  if(Button3)
+  {
+    index--;
+    if(index<0)
+      index=0;
+  }
 
 } //end:LOOP
 

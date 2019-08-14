@@ -16,11 +16,22 @@
  * DRV2605 GND --> ARD GND
  * DRV2605 SCL --> ARD A5 (Mega D21, Micro D3)
  * DRV2605 SDA --> ARD A4 (Mega D20, Micro D2)
+ * 
+ * Button1 --> ARD D5
+ * Button2 --> ARD D8
+ * Button3 --> ARD D10
  */
  
 //*************************** VARIABLES **************************************//
 
 Adafruit_DRV2605 drv;
+
+const int pinButton1 = 5;   //D5
+int Button1 = 0;
+const int pinButton2 = 8;   //D8
+int Button2 = 0;
+const int pinButton3 = 10;  //D10
+int Button3 = 0;
 
 typedef struct{
   int value;
@@ -33,12 +44,21 @@ effect EFFECT[10] = {{5,"single-click sharp"},{25,"single-tick sharp"},
                      {87,"ramp-up short"},{85,"ramp-up medium"},{83,"ramp-up long"},
                      {75,"ramp-down short"},{73,"ramp-down medium"},{71,"ramp-down long"}};
 
+int index = 0;
+
 
 //*************************** SETUP **************************************//
 void setup() 
 {
   Serial.begin(9600);
   Serial.println(F("PRECISION MICRODRIVES - SCREEN_HAPTICS_basic DEMO"));
+
+  //init Buttons
+  pinMode(pinButton1, INPUT);
+  pinMode(pinButton2, INPUT);
+  pinMode(pinButton3, INPUT);
+  
+  //init DRV2605
   drv.begin();
 
 } //end:SETUP
@@ -46,8 +66,39 @@ void setup()
 //*************************** LOOP **************************************//
 void loop() 
 {
+  //============= DEMO CODE =======================
   //Demo effects
-  demo();
+  //demo();
+
+  //============= APPLICATION CODE ================
+  //read buttons
+  Button1 = digitalRead(pinButton1);
+  Button2 = digitalRead(pinButton2);
+  Button3 = digitalRead(pinButton3);
+
+  //Button1 is used to play effect
+  if(Button1)
+  {
+    Serial.println(index);
+    PrintEffect(EFFECT[index]);
+    PlayEffect(EFFECT[index].value);
+  }
+
+  //Button2 is used to increment effect
+  if(Button2)
+  {
+   index++;
+   if(index>9)
+    index=9; 
+  }
+
+  //Button3 is used to decrement effect
+  if(Button3)
+  {
+    index--;
+    if(index<0)
+      index=0;
+  }
 
 } //end:LOOP
 

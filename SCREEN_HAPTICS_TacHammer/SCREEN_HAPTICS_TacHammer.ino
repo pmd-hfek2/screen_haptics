@@ -3,7 +3,7 @@
  * SCREEN_HAPTICS for Haptic Feedback Evaluation Kit 2 (HFEK2) and demos
  * by: Tristan Cool
  * August 2019 
- * Arduino Micro
+ * Arduino MICRO
 ***************************************************************************/
 //Source code: NANOPORT TACHAMMER DEVELOPER KIT FIRMWARE (TacHammerDevKitAutorun)
 
@@ -18,6 +18,10 @@
  * DRV2605 SCL --> ARD D3
  * DRV2605 SDA --> ARD D2
  * DRV2605 IN  --> ARD D13
+ * 
+ * Button1 --> ARD D5
+ * Button2 --> ARD D8
+ * Button3 --> ARD D10
  */
 
 //*************************** VARIABLES ***********************************//
@@ -28,6 +32,13 @@ byte ModeReg = 0x01;
 // COUNTERS
 int cycle = 0;
 
+// BUTTONS
+const int pinButton1 = 5;   //D5
+int Button1 = 0;
+const int pinButton2 = 8;   //D8
+int Button2 = 0;
+const int pinButton3 = 10;  //D10
+int Button3 = 0;
 
 //*************************** SETUP **************************************//
 
@@ -36,6 +47,11 @@ void setup()
   Wire.begin();
   Serial.begin(9600);
   Serial.println("PRECISION MICRODRIVES - SCREEN_HAPTICS_TacHammer DEMO");
+
+  //init Buttons
+  pinMode(pinButton1, INPUT);
+  pinMode(pinButton2, INPUT);
+  pinMode(pinButton3, INPUT);
 
   pwm613configure();    //sets up PWM signal
   delay(2);
@@ -49,8 +65,54 @@ void setup()
 //*************************** LOOP ***************************************//
 void loop() 
 {
+  //================= ORIGINAL CODE ========================
+//  // true IF USING DIGITAL PIN 5 AS AN INPUT BUTTON
+//  // false IF CYCLING THROUGH EFFECTS AUTOMATICALLY
+//  if (false){     
+//    if (!digitalRead(buttonPin)){
+//      effectCycle(cycle);
+//      cycle++;
+//      pause(50);
+//    }
+//  }
+//  else{
+//    for (int i=0;i<12;i++){
+//      effectCycle(i);
+//    }
+//  }
+//}
+
+  //=================== DEMO CODE =========================
   //Demo effects
-  demo();
+  //demo();
+
+  //============= APPLICATION CODE ================
+  //read buttons
+  Button1 = digitalRead(pinButton1);
+  Button2 = digitalRead(pinButton2);
+  Button3 = digitalRead(pinButton3);
+
+  //Button1 is used to play effect
+  if(Button1)
+  {
+    effectCycle(cycle);
+  }
+  
+  //Button2 is used to increment effect
+  if(Button2)
+  {
+   cycle++;
+   if(cycle>4)
+    cycle=4; 
+  }
+
+  //Button3 is used to decrement effect
+  if(Button3)
+  {
+    cycle--;
+    if(cycle<0)
+      cycle=0;
+  }
 
 } //end:LOOP
 
@@ -230,6 +292,44 @@ void pulseRamp() {
       i += 0.05;
     }
   }
+}
+
+// ================================================================================
+// cycles through various haptic effects 
+void effectCycle(int count){
+  Serial.println(count);
+  if (count == 0){
+    for (int j=0;j<4;j++){
+      lraClick();
+      pause(500);
+    }
+    pause(1000);
+  }
+
+  else if (count == 1){
+    for (int j=0;j<4;j++){
+      ermRumble();
+    }
+    pause(1000);
+  }
+
+  else if (count == 2){
+    vibrateRamp();
+    pause(1000);
+  }
+
+  else if (count == 3){
+    for (int j=0;j<4;j++){
+      impactClick();
+      pause(500);
+    }
+    pause(1000);
+  }
+
+  else if (count == 4){
+    pulseRamp();
+    pause(1000);
+  } 
 }
 
 // ********************************************************************************
