@@ -28,10 +28,13 @@ Adafruit_DRV2605 drv;
 
 const int pinButton1 = 5;   //D5
 int Button1 = 0;
+int prevButton1 = 0;
 const int pinButton2 = 8;   //D8
 int Button2 = 0;
+int prevButton2 = 0;
 const int pinButton3 = 10;  //D10
 int Button3 = 0;
+int prevButton3 = 0;
 
 typedef struct{
   int value;
@@ -85,20 +88,30 @@ void loop()
   }
 
   //Button2 is used to increment effect
-  if(Button2)
-  {
-   index++;
-   if(index>9)
-    index=9; 
+  if(Button2 != prevButton2){
+    if(Button2)
+    {
+     index++;
+     if(index>9)
+      index=9; 
+     Serial.println(index);
+    }
+    delay(50);
   }
+  prevButton2 = Button2;
 
   //Button3 is used to decrement effect
-  if(Button3)
-  {
-    index--;
-    if(index<0)
-      index=0;
+  if(Button3 != prevButton3){
+    if(Button3)
+    {
+      index--;
+      if(index<0)
+        index=0;
+      Serial.println(index);
+    }
+    delay(50);
   }
+  prevButton3 = Button3;
 
 } //end:LOOP
 

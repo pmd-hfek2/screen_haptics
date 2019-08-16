@@ -35,10 +35,13 @@ int cycle = 0;
 // BUTTONS
 const int pinButton1 = 5;   //D5
 int Button1 = 0;
+int prevButton1 = 0;
 const int pinButton2 = 8;   //D8
 int Button2 = 0;
+int prevButton2 = 0;
 const int pinButton3 = 10;  //D10
 int Button3 = 0;
+int prevButton3 = 0;
 
 //*************************** SETUP **************************************//
 
@@ -99,20 +102,30 @@ void loop()
   }
   
   //Button2 is used to increment effect
-  if(Button2)
-  {
-   cycle++;
-   if(cycle>4)
-    cycle=4; 
+  if(Button2 != prevButton2){
+    if(Button2)
+    {
+     cycle++;
+     if(cycle>4)
+      cycle=4; 
+     Serial.println(cycle);
+    }
+    delay(50);
   }
+  prevButton2 = Button2;
 
   //Button3 is used to decrement effect
-  if(Button3)
-  {
-    cycle--;
-    if(cycle<0)
-      cycle=0;
+  if(Button3 != prevButton3){
+    if(Button3)
+    {
+      cycle--;
+      if(cycle<0)
+        cycle=0;
+      Serial.println(cycle);
+    }
+    delay(50);
   }
+  prevButton3 = Button3;
 
 } //end:LOOP
 
