@@ -67,6 +67,8 @@ void setup()
   Serial.println(F("PRECISION MICRODRIVES - SCREEN_HAPTICS_PMD DEMO"));
   //Serial.print( F("FreeMem=") );
   //Serial.println( freeRAM() );
+  Serial.println(F("!=====*=======*=======*======*======*=======*======!"));
+  Serial.println(F("::Press and hold Button2 & Button3 to change motor."));
 
   //init Buttons
   pinMode(pinButton1, INPUT);
