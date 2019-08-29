@@ -34,6 +34,7 @@ Motor motor = Motor();
  */
 
 //*************************** VARIABLES **************************************//
+int motor_id = 3; //default LRA (C10-100)
 
 const int pinButton1 = 5;   //D5
 int Button1 = 0;
@@ -61,7 +62,7 @@ int index = 0;
 //*************************** SETUP **************************************//
 void setup()
 {
-  // setup Serial
+  //setup Serial
   Serial.begin( 9600 );
   Serial.println(F("PRECISION MICRODRIVES - SCREEN_HAPTICS_PMD DEMO"));
   //Serial.print( F("FreeMem=") );
@@ -76,11 +77,11 @@ void setup()
   setupPins();
   i2cInit( 200 );
   
-  // Set up the motor
-  motor.selectMotor( 6 ); //TacHammer
+  //Set up the motor
+  motor.selectMotor(motor_id); 
   motor.autoCalibrate();
 
-  // Ensure any time for calibration is ignored.
+  //Ensure any time for calibration is ignored.
   timer.reset();
 
 } //end:SETUP
@@ -113,7 +114,7 @@ void loop()
   //Button1 is used to play effect
   if(Button1)
   {
-    Serial.println(index);
+    PrintIndex();
     PrintEffect(EFFECT[index]);
     PlayEffect(EFFECT[index].value);
   }
@@ -122,10 +123,15 @@ void loop()
   if(Button2 != prevButton2){
     if(Button2)
     {
-     index++;
-     if(index>9)
-      index=9; 
-     Serial.println(index);
+      //change motor by Button2 + Button3
+      if(Button3)
+        SetMotor();
+      
+      else 
+        index++;
+        if(index>9)
+          index=9; 
+        PrintIndex();
     }
     delay(50);
   }
@@ -135,10 +141,15 @@ void loop()
   if(Button3 != prevButton3){
     if(Button3)
     {
-      index--;
-      if(index<0)
-        index=0;
-      Serial.println(index);
+      //change motor by Button2 + Button3
+      if(Button2)
+        SetMotor();
+
+      else
+        index--;
+        if(index<0)
+          index=0;
+        PrintIndex();
     }
     delay(50);
   }
@@ -167,6 +178,25 @@ void setupPins()
     digitalWrite( ERM_SEL,      HIGH  );    // Select none
     digitalWrite( LRA_SEL,      HIGH  );    // Select none 
 } // setupPins
+
+void SetMotor()
+{
+  if(motor_id == 3)
+    motor_id = 6;
+  else
+    motor_id = 3;
+
+  Serial.print(F("motor: "));
+  Serial.println(motor_id);
+  motor.selectMotor(motor_id); 
+  motor.autoCalibrate(); 
+}
+
+void PrintIndex()
+{
+  Serial.print(F("effect: "));
+  Serial.println(index);
+}
 
 void PrintEffect(effect &EFFECT)
 {
