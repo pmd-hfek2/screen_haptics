@@ -34,6 +34,8 @@ Motor motor = Motor();
  */
 
 //*************************** VARIABLES **************************************//
+bool demo_mode = false; //default Application Mode
+
 int motor_id = 3; //default LRA (C10-100)
 
 const int pinButton1 = 5;   //D5
@@ -59,6 +61,9 @@ effect EFFECT[10] = {{5,"single-click sharp"},{25,"single-tick sharp"},
 
 int index = 0;
 
+// ******** FUNCTION PROTOTYPES ***********
+void PrintEffect(effect &EFFECT);
+
 //*************************** SETUP **************************************//
 void setup()
 {
@@ -68,7 +73,8 @@ void setup()
   //Serial.print( F("FreeMem=") );
   //Serial.println( freeRAM() );
   Serial.println(F("!=====*=======*=======*======*======*=======*======!"));
-  Serial.println(F("::Press and hold Button2 & Button3 to change motor."));
+  Serial.println(F(":: Press and hold Button2 & Button3 to change motor."));
+  Serial.println(F(":: Press and hold Button1 & Button3 to change mode."));
 
   //init Buttons
   pinMode(pinButton1, INPUT);
@@ -102,61 +108,79 @@ void loop()
 //   motor.playFullHaptic( 1, 53 );
 //  }
 
+    //read buttons
+    Button1 = digitalRead(pinButton1);
+    Button2 = digitalRead(pinButton2);
+    Button3 = digitalRead(pinButton3);
+    
   //============= DEMO CODE =======================
-  //Demo effects
-  //demo();
-
-  //============= APPLICATION CODE ================
-  //read buttons
-  Button1 = digitalRead(pinButton1);
-  Button2 = digitalRead(pinButton2);
-  Button3 = digitalRead(pinButton3);
-
-  //Button1 is used to play effect
-  //Button1 is used to play effect
-  if(Button1)
+  //Demo effects (with both motors)
+  if(demo_mode)
   {
-    PrintIndex();
-    PrintEffect(EFFECT[index]);
-    PlayEffect(EFFECT[index].value);
-  }
+    demo();
+  } //DEMO CODE
 
-  //Button2 is used to increment effect
-  if(Button2 != prevButton2){
-    if(Button2)
+  else
+  {
+    //============= APPLICATION CODE ================
+  
+    //Button1 is used to play effect
+    if(Button1)
     {
-      //change motor by Button2 + Button3
-      if(Button3)
-        SetMotor();
-      
-      else 
-        index++;
-        if(index>9)
-          index=9; 
-        PrintIndex();
-    }
-    delay(50);
-  }
-  prevButton2 = Button2;
-
-  //Button3 is used to decrement effect
-  if(Button3 != prevButton3){
-    if(Button3)
-    {
-      //change motor by Button2 + Button3
-      if(Button2)
-        SetMotor();
-
+      //change mode by Button1 + Button3
+      if(Button3 != prevButton3){
+        if(Button3)
+        {
+          SetMode();
+          Serial.println(F("$$$$$$$$$$$ DEMO mode $$$$$$$$$$$$$$"));
+        }
+        prevButton3 = Button3;
+      }
       else
-        index--;
-        if(index<0)
-          index=0;
+      {
         PrintIndex();
+        PrintEffect(EFFECT[index]);
+        PlayEffect(EFFECT[index].value);
+      }
     }
-    delay(50);
-  }
-  prevButton3 = Button3;
-
+  
+    //Button2 is used to increment effect
+    if(Button2 != prevButton2){
+      if(Button2)
+      {
+        //change motor by Button2 + Button3
+        if(Button3)
+          SetMotor();
+        
+        else 
+          index++;
+          if(index>9)
+            index=9; 
+          PrintIndex();
+      }
+      delay(50);
+    }
+    prevButton2 = Button2;
+  
+    //Button3 is used to decrement effect
+    if(Button3 != prevButton3){
+      if(Button3)
+      {
+        //change motor by Button2 + Button3
+        if(Button2)
+          SetMotor();
+  
+        else
+          index--;
+          if(index<0)
+            index=0;
+          PrintIndex();
+      }
+      delay(50);
+    }
+    prevButton3 = Button3;
+  } //APPLICATION CODE
+  
 } //end:LOOP
 
 
@@ -179,7 +203,15 @@ void setupPins()
     digitalWrite( GRIP_SEL,     HIGH  );    // Select none 
     digitalWrite( ERM_SEL,      HIGH  );    // Select none
     digitalWrite( LRA_SEL,      HIGH  );    // Select none 
-} // setupPins
+} //end:setupPins
+
+void SetMode()
+{
+  if(demo_mode)
+    demo_mode = false;
+  else
+    demo_mode = true;
+} //end:SetMode
 
 void SetMotor()
 {
@@ -192,34 +224,52 @@ void SetMotor()
   Serial.println(motor_id);
   motor.selectMotor(motor_id); 
   motor.autoCalibrate(); 
-}
+} //end:SetMotor
 
 void PrintIndex()
 {
   Serial.print(F("effect: "));
   Serial.println(index);
-}
+} //end:PrintIndex
 
 void PrintEffect(effect &EFFECT)
 {
   Serial.print(EFFECT.value);
   Serial.print(F(": "));
   Serial.println(EFFECT.id);
-}
+} //end:PrintEffect
 
 void PlayEffect(int effect)
 {
     //set and play effect
     motor.playFullHaptic( 1, effect );
     delay(1000);
-}
+} //end:PlayEffect
 
 void demo()
 {
+  delay(1000);
   for(int i = 0; i < sizeof(EFFECT)/sizeof(effect); i++)
-  {
-    PrintEffect(EFFECT[i]);
-    PlayEffect(EFFECT[i].value);
-    delay(1000);
+  { 
+    //read buttons
+    Button1 = digitalRead(pinButton1);
+    Button2 = digitalRead(pinButton2);
+    Button3 = digitalRead(pinButton3);  
+    if(Button1)
+    {
+      if(Button3)
+      {
+        SetMode();
+        Serial.println(F("$$$$$$$$$ APP mode $$$$$$$$$$$$$"));
+        break;
+      }
+    }
+    else
+    {
+      PrintEffect(EFFECT[i]);
+      PlayEffect(EFFECT[i].value);
+      delay(1000);
+    }
   }
-}
+  SetMotor(); //repeat with next motor
+} //end:demo
