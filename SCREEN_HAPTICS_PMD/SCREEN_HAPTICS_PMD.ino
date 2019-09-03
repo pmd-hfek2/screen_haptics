@@ -53,13 +53,15 @@ typedef struct{
   String id;
 } effect;
 
-//single-click(strong,medium), double-click(strong,medium), ramp-up(short,medium,long), ramp-down(short,medium,long)
+//add effects - (Clicks, Sliders)
 effect EFFECT[10] = {{5,"single-click sharp"},{25,"single-tick sharp"},
                      {35,"double-tick sharp"},{36,"double-click sharp"},
                      {87,"ramp-up short"},{85,"ramp-up medium"},{83,"ramp-up long"},
                      {75,"ramp-down short"},{73,"ramp-down medium"},{71,"ramp-down long"}};
 
 int index = 0;
+int max_effects = sizeof(EFFECT)/sizeof(effect);
+
 
 // ******** FUNCTION PROTOTYPES ***********
 void PrintEffect(effect &EFFECT);
@@ -120,10 +122,9 @@ void loop()
     demo();
   } //DEMO CODE
 
+  //============= APPLICATION CODE ================
   else
   {
-    //============= APPLICATION CODE ================
-  
     //Button1 is used to play effect
     if(Button1)
     {
@@ -154,8 +155,8 @@ void loop()
         
         else 
           index++;
-          if(index>9)
-            index=9; 
+          if(index>max_effects-1)
+            index=max_effects-1; 
           PrintIndex();
       }
       delay(50);
@@ -220,6 +221,7 @@ void SetMotor()
   else
     motor_id = 3;
 
+  Serial.println(F("££££££££ MOTOR £££££££££"));
   Serial.print(F("motor: "));
   Serial.println(motor_id);
   motor.selectMotor(motor_id); 
@@ -228,8 +230,15 @@ void SetMotor()
 
 void PrintIndex()
 {
-  Serial.print(F("effect: "));
-  Serial.println(index);
+  if(index < 5) //"Click" effects
+    Serial.print(F("Click"));
+  else          //"Slider" effects
+    Serial.print(F("Slider"));
+    
+  Serial.print(F(" - effect: "));
+  Serial.print(index+1);
+  Serial.print(F(" of "));
+  Serial.println(max_effects);
 } //end:PrintIndex
 
 void PrintEffect(effect &EFFECT)
@@ -249,7 +258,7 @@ void PlayEffect(int effect)
 void demo()
 {
   delay(1000);
-  for(int i = 0; i < sizeof(EFFECT)/sizeof(effect); i++)
+  for(int i = 0; i < max_effects; i++)
   { 
     //read buttons
     Button1 = digitalRead(pinButton1);
