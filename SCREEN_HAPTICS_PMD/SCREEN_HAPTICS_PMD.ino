@@ -21,6 +21,8 @@
 #include "Metro.h"
 #include "motor.h"
 
+#include "Accelerometer.h"
+
 // Init timer for 2s, and auto-reset when we get a positive check
 Metro timer( 2000, 1 );
 Motor motor = Motor();
@@ -31,6 +33,11 @@ Motor motor = Motor();
  * Button1 --> ARD D5
  * Button2 --> ARD D8
  * Button3 --> ARD D10
+ * 
+ * Accel. X --> ARD A5
+ * Accel. Y --> ARD A4
+ * Accel. Z --> ARD A2
+ * 
  */
 
 //*************************** VARIABLES **************************************//
@@ -62,6 +69,11 @@ effect EFFECT[10] = {{5,"single-click sharp"},{25,"single-tick sharp"},
 int index = 0;
 int max_effects = sizeof(EFFECT)/sizeof(effect);
 
+//Accelerometer
+#define pinX A5
+#define pinY A4
+#define pinZ A2
+Accelerometer accelerometer(183,182,198,0.0303,0.0303,0.0303); // xyz threshold, xyz gain
 
 // ******** FUNCTION PROTOTYPES ***********
 void PrintEffect(effect &EFFECT);
@@ -82,7 +94,7 @@ void setup()
   pinMode(pinButton1, INPUT);
   pinMode(pinButton2, INPUT);
   pinMode(pinButton3, INPUT);
-
+ 
   //init DRV
   setupPins();
   i2cInit( 200 );
@@ -90,6 +102,11 @@ void setup()
   //Set up the motor
   motor.selectMotor(motor_id); 
   motor.autoCalibrate();
+
+  //Set up the accelerometer
+  accelerometer.init(pinX,pinY,pinZ);
+  accelerometer.auto_calibrate();
+  //accelerometer.manual_calibrate(5,5,5);
 
   //Ensure any time for calibration is ignored.
   timer.reset();
@@ -125,6 +142,9 @@ void loop()
   //============= APPLICATION CODE ================
   else
   {
+    //start accelerometer reading
+    accelerometer.start(true);
+     
     //Button1 is used to play effect
     if(Button1)
     {
