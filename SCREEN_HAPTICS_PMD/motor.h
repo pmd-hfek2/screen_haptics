@@ -87,7 +87,7 @@ static const MotorInfo motorTable[ NUM_MOTORS ] PROGMEM ={
     { 3,    true,   false,  15, 102,    105,    "C10-100" },    // M3 - LRA, C10-100 min 0.3 Vrms, rated 2 Vrms, max 2.05 Vrms 
     { 4,    true,   true,   15, 102,    105,    "C10-100" },    // SHIELD M0 - LRA, C10-100 min 0.3 Vrms, rated 2 Vrms, max 2.05 Vrms
     { 5,    false,  true,   56, 66,     87,     "304-103" },    // SHIELD M1 - ERM 304-103, min 1.8V, rated 2.7V, max 3.2V
-    { 6,    true,   false,  77, 162,    255,    "TAC-HAM" },    // M6 - SRA TacHammer, min 3.6V, rated 3.6V, max 10V (Freq = 90Hz)
+    { 6,    true,   false,  77, 162,    255,    "TAC-C27" },    // M6 - SRA TacHammer, min 3.6V, rated 3.6V, max 10V (Freq = 90Hz); M6 - LRA C27-000, min 0.4V, rated 2.6V, max 2.65V
 };
 
 #endif // include_motor_h

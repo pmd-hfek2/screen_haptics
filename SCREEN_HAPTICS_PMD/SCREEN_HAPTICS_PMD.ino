@@ -30,6 +30,11 @@ Motor motor = Motor();
 //*************************** WIRING  **************************************//
 /* PMD Haptic Feedback Evaluation Kit (HFEK) in Developer Mode
  * 
+ * DRV2605 VIN --> ARD 5V
+ * DRV2605 GND --> ARD GND
+ * DRV2605 SCL --> ARD A5 (Mega D21, Micro D3)
+ * DRV2605 SDA --> ARD A4 (Mega D20, Micro D2)
+ * 
  * Button1 --> ARD D5
  * Button2 --> ARD D8
  * Button3 --> ARD D10
@@ -70,8 +75,8 @@ int index = 0;
 int max_effects = sizeof(EFFECT)/sizeof(effect);
 
 //Accelerometer
-#define pinX A5
-#define pinY A4
+#define pinX A0
+#define pinY A1
 #define pinZ A2
 Accelerometer accelerometer(183,182,198,0.0303,0.0303,0.0303); // xyz threshold, xyz gain
 
@@ -87,8 +92,9 @@ void setup()
   //Serial.print( F("FreeMem=") );
   //Serial.println( freeRAM() );
   Serial.println(F("!=====*=======*=======*======*======*=======*======!"));
-  Serial.println(F(":: Press and hold Button2 & Button3 to change motor."));
-  Serial.println(F(":: Press and hold Button1 & Button3 to change mode."));
+  Serial.println(F(":: Press and hold Button2 & Button3 to change screen/motor."));
+  Serial.println(F(":: Press and hold Button1 & Button3 to change Demo/App mode."));
+  Serial.println(F(":: Toggle switches between screen sizes and actuators."));
 
   //init Buttons
   pinMode(pinButton1, INPUT);
@@ -143,7 +149,7 @@ void loop()
   else
   {
     //start accelerometer reading
-    accelerometer.start(true);
+    accelerometer.start(false);
      
     //Button1 is used to play effect
     if(Button1)
@@ -236,12 +242,15 @@ void SetMode()
 
 void SetMotor()
 {
+  //3 = C10-100 for small touchscreen ; 6 = TAC-C27 for large touchscreen
   if(motor_id == 3)
     motor_id = 6;
   else
     motor_id = 3;
 
   Serial.println(F("££££££££ MOTOR £££££££££"));
+  Serial.println(F("(Set switch to C10-100(3) for small screen ; TAC-C27(6) for large screen)"));
+  //Experiment with running C27 as C10 (!!!)
   Serial.print(F("motor: "));
   Serial.println(motor_id);
   motor.selectMotor(motor_id); 
