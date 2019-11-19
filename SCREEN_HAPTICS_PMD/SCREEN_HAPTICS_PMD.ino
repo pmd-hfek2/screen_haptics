@@ -39,8 +39,8 @@ Motor motor = Motor();
  * Button2 --> ARD D8
  * Button3 --> ARD D10
  * 
- * Accel. X --> ARD A5
- * Accel. Y --> ARD A4
+ * Accel. X --> ARD A0
+ * Accel. Y --> ARD A1
  * Accel. Z --> ARD A2
  * 
  */
@@ -147,10 +147,7 @@ void loop()
 
   //============= APPLICATION CODE ================
   else
-  {
-    //start accelerometer reading
-    accelerometer.start(false);
-     
+  { 
     //Button1 is used to play effect
     if(Button1)
     {
@@ -281,6 +278,8 @@ void PlayEffect(int effect)
 {
     //set and play effect
     motor.playFullHaptic( 1, effect );
+    //start accelerometer reading
+    accelerometer.start(true);
     delay(1000);
 } //end:PlayEffect
 

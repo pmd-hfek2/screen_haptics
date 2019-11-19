@@ -52,6 +52,11 @@ void Accelerometer::read_data()
 void Accelerometer::auto_calibrate()
 {
 	read_data();
+  //set threshold to base values + small tolerance
+  X_th = X_read;
+  Y_th = Y_read;
+  Z_th = Z_read;
+  //(DC)bias is initial reading with gain (in G)
 	X_bias = X_read*X_gain;
 	Y_bias = Y_read*Y_gain;
 	Z_bias = Z_read*Z_gain;
@@ -117,7 +122,7 @@ void Accelerometer::start(bool run)
 	if(run)
 	{
 		read_data();
-		if(X_read > X_th && Y_read > Y_th && Z_read > Z_th)
+		if(X_read > X_th || Y_read > Y_th || Z_read > Z_th)
 		{
 			//Serial.println(F("*** ACCEL. X-Y-Z (raw)   ***"));
 			Serial.println(F("*** ACCEL. X-Y-Z (G)     ***"));

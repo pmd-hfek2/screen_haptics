@@ -37,14 +37,14 @@
 //#define SW_LRA_M      7
 //#define SW_MOS_DRV    6
 
-#define FAH_4830_EN		A2
+#define FAH_4830_EN		0  //A2
 #define DRV_2605_EN		7
 #define PWM_OUT			9
 
 // Motors
 #define NUM_MOTORS      7     // added TacHammer solenoid
-#define MOTOR_PIN_0     A0    // pins for motor changing on grip  GRSEL1
-#define MOTOR_PIN_1     A1    // pins for motor changing on grip  GRSEL2
+#define MOTOR_PIN_0     0 //A0    // pins for motor changing on grip  GRSEL1
+#define MOTOR_PIN_1     0 //A1    // pins for motor changing on grip  GRSEL2
 #define KEY_MOTOR_ID    4
 
 // DRV2605
