@@ -97,7 +97,7 @@ void Accelerometer::print_raw()
 
 void Accelerometer::print_accel()
 {
-	//Serial.println(F("*** ACCEL. X-Y-Z (G)     ***"));
+	//Serial.println(F("***** ACCEL. X-Y-Z (G)     *****"));
 	Serial.print(X_G);
 	Serial.print(F("G ; "));
 	Serial.print(Y_G);
@@ -108,13 +108,53 @@ void Accelerometer::print_accel()
 
 void Accelerometer::print_max()
 {
-	Serial.println(F("*** ACCEL. X-Y-Z (Max. G) ***"));
+	Serial.println(F("***** ACCEL. X-Y-Z (Max. G) *****"));
 	Serial.print(X_max);
 	Serial.print(F("G ; "));
 	Serial.print(Y_max);
 	Serial.print(F("G ; "));
 	Serial.print(Z_max);
 	Serial.println(F("G"));
+}
+
+void Accelerometer::analyse()
+{
+  vector_sum = X_max + Y_max + Z_max;
+  average = vector_sum / 3;
+  float variance = (X_max*X_max + Y_max*Y_max + Z_max*Z_max)/3;
+  std_dev = sqrt(variance);
+  
+  Serial.println(F("***** ACCEL. Analyse       *****"));
+  Serial.print(F("* Vector sum (G): "));
+  Serial.println(vector_sum);
+  Serial.print(F("* Axis average (G): "));
+  Serial.println(average);
+  Serial.print(F("* Standard Deviation: "));
+  Serial.println(std_dev);
+
+  bool one_std_dev;
+  if((X_max*1.05 > average-std_dev) && (X_max*0.95 < average+std_dev))
+  {
+    if((Y_max*1.05 > average-std_dev) && (Y_max*0.95 < average+std_dev))
+    {
+      if((Z_max*1.05 > average-std_dev) && (Z_max*0.95 < average+std_dev))
+      {
+        one_std_dev = true;
+      }
+      else
+        one_std_dev = false;
+    }
+    else
+      one_std_dev = false;
+  }
+  else
+    one_std_dev = false;
+  
+  if(one_std_dev)
+    Serial.println(F("All axes are within 1 standard deviation (5% tolerance)."));
+  else
+    Serial.println(F("Not all axes are within 1 standard deviation."));
+
 }
 
 void Accelerometer::start(bool run)
@@ -124,8 +164,8 @@ void Accelerometer::start(bool run)
 		read_data();
 		if(X_read > X_th || Y_read > Y_th || Z_read > Z_th)
 		{
-			//Serial.println(F("*** ACCEL. X-Y-Z (raw)   ***"));
-			Serial.println(F("*** ACCEL. X-Y-Z (G)     ***"));
+			//Serial.println(F("***** ACCEL. X-Y-Z (raw)   *****"));
+			Serial.println(F("***** ACCEL. X-Y-Z (G)     *****"));
 			while(X_read > X_th || Y_read > Y_th || Z_read > Z_th)
 			{
 				//print_raw();
@@ -133,6 +173,7 @@ void Accelerometer::start(bool run)
 				read_data();
 			}
 			print_max();
+      analyse();
 		}
 		X_max = Y_max = Z_max = 0;
 	}

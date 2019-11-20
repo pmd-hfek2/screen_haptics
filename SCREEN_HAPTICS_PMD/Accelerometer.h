@@ -30,6 +30,11 @@ class Accelerometer{
 		float Z_G;            //Accelerometer axis in G (gain)
 		float Z_max;          //Max.G value
 
+  //Data
+    float vector_sum;     //Vector sum of x,y,z values
+    float average;        //Avergae axis G value
+    float std_dev;        //Standard Deviation
+
 				
 	//Functions:
 	void init(uint8_t X, uint8_t Y, uint8_t Z);
@@ -39,6 +44,7 @@ class Accelerometer{
 	void print_raw();
 	void print_accel();
 	void print_max();
+  void analyse();
   void start(bool run);
 	
 		
